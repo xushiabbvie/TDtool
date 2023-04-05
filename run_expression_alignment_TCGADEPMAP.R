@@ -4,7 +4,7 @@
 #### https://doi.org/10.1038/s41467-020-20294-x
 
 rm(list=ls())
-datapath="/unitynfs1/projects/shixx1/Celligner_ms"
+datapath="./"
 setwd(datapath)
 
 source("src/Celligner_methods.R") ### Please restart R if you see error this line
@@ -13,7 +13,7 @@ source("src/Celligner_methods.R") ### Please restart R if you see error this lin
 #### CCLE expression file CCLE_expression_full.csv is downloaded from depmap portal
 #### All the other data are downloaded from https://github.com/broadinstitute/Celligner_ms
 
-dat = load_data('/unitynfs1/projects/shixx1/Celligner_ms',tumor_file = "TumorCompendium_v10_PolyA_hugo_log2tpm_58581genes_2019-07-25.tsv", 
+dat = load_data('./',tumor_file = "TumorCompendium_v10_PolyA_hugo_log2tpm_58581genes_2019-07-25.tsv", 
                            cell_line_file = "CCLE_expression_full.csv",annotation_file = "Celligner_info.csv", hgnc_file = "hgnc_complete_set_7.24.2018.txt")
 
 common_DepMap_ID = intersect(rownames(dat$CCLE_mat),dat$CCLE_ann$sampleID)
