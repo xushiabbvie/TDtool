@@ -83,7 +83,7 @@ mnn_res <- run_MNN(CCLE_cor, TCGA_cor,  k1 = global$mnn_k_tumor, k2 = global$mnn
                    subset_genes = DE_gene_set)
 
 corrected_data = t(rbind(mnn_res$corrected, CCLE_cor)) ### output aligned data
-
+saveRDS(corrected_data,file="aligned_expression_TCGA_DEPMAP.rds")
 
 
 
