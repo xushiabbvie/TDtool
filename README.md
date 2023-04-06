@@ -16,8 +16,8 @@ The DEPMAP cell line expression data is downloaded from [DEPMAP portal](https://
 The metadata for the analysis is downloaded from https://figshare.com/articles/Celligner_data/11965269.
 
 ### Code
-**run_expression_alignment_TCGADEPMAP.R** script can be used to align the gene expression between TCGA and DEPMAP.
-**build_model_predict_TCGADEPMAP.R** script can be used to build elasti-net models from DEPMAP gene essentiality data and transfer on TCGA data
+- **run_expression_alignment_TCGADEPMAP.R** script can be used to align the gene expression between TCGA and DEPMAP.
+- **build_model_predict_TCGADEPMAP.R** script can be used to build elasti-net models from DEPMAP gene essentiality data and transfer on TCGA data
 
 ### Dependencies:
 
