@@ -19,6 +19,9 @@ The metadata for the analysis is downloaded from https://figshare.com/articles/C
 - **run_expression_alignment_TCGADEPMAP.R** script can be used to align the gene expression between TCGA and DEPMAP.
 - **build_model_predict_TCGADEPMAP.R** script can be used to build elasti-net models from DEPMAP gene essentiality data and transfer on TCGA data
 
+## ShinyApp
+We built a shiny app for users to exploring the data. The code for running the shiny app is at shinyapp/app.R. The app will need R image data of TCGADEPMAP in the same directory of the shinyapp. The R image data can be downloaded from https://figshare.com/s/5e09e93d10892afa63c8. 
+
 ### Dependencies:
 
 Here is the list of the dependencies in R packages which are available in Bioconductor.
