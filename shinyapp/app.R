@@ -7,38 +7,34 @@ ui = navbarPage("TCGADEPMAP", tabPanel("Gene essentiality across lineages",fluid
   # Create a new Row in the UI for selectInputs
   fluidRow(
     column(4,
-           selectizeInput("gene",
-                          "Gene Name:",
-                          choices=c("",setdiff(colnames(pdx_plot)[!grepl("MUT.",colnames(pdx_plot))],"lineage")))),
-    column(4,
            selectInput("data",
                        "Data:",
                        c("DEPMAP",
-                         unique(c("TCGADEPMAP","GTEXDEPMAP","PDXEDEPMAP")))))
+                         unique(c("TCGADEPMAP(exp.only)","GTEXDEPMAP(exp.only)","PDXEDEPMAP(exp.only)","TCGADEPMAP(integrated)"))))),
+    column(4,
+           mainPanel(uiOutput("esssel")))
   ),
   mainPanel(
-    #actionButton("plotlin","Plot"),
     plotOutput(outputId = "distPlot"),
     uiOutput("down")
     
   ))),
-  tabPanel("Gene essentiality vs LOF",fluidPage(
-    titlePanel("Gene essentiality vs LOF"),
-    radioButtons("muttype", "LOF type:",
+  tabPanel("Gene essentiality vs mut/del/amp",fluidPage(
+    titlePanel("Gene essentiality vs mut/del/amp"),
+    radioButtons("muttype", "mut/del/amp type:",
                  c("Mutation" = "mut",
-                   "Deletion" = "del")),
+                   "Deletion" = "del",
+                   "Amplification" = "amp")),
     # Create a new Row in the UI for selectInputs
     fluidRow(
       column(4,
              selectInput("mutdata",
                          "Data:",
                          c("DEPMAP",
-                           unique(c("TCGADEPMAP","PDXEDEPMAP"))))
+                           unique(c("TCGADEPMAP(exp.only)","PDXEDEPMAP(exp.only)","TCGADEPMAP(integrated)"))))
       ),
       column(4,
-             selectizeInput("gene2",
-                            "Gene Name:",
-                            choices=c("",setdiff(colnames(pdx_plot)[!grepl("MUT.",colnames(pdx_plot))],"lineage")))),
+             mainPanel(uiOutput("esssel2"))),
       column(4,
              mainPanel(uiOutput("mutsel")))
     ),
@@ -58,22 +54,75 @@ server = function(input, output) {
       {
         x_data = depmap_plot[,c(x_gene,"lineage")]
       }
-      else if(input$data == "TCGADEPMAP")
+      else if(input$data == "TCGADEPMAP(exp.only)")
       {
         x_data = tcga_plot[,c(x_gene,"lineage")]
       }
-      else if(input$data == "GTEXDEPMAP")
+      else if(input$data == "GTEXDEPMAP(exp.only)")
       {
         x_data= gtex_plot[,c(x_gene,"lineage")]
       }
-      else if(input$data == "PDXEDEPMAP")
+      else if(input$data == "PDXEDEPMAP(exp.only)")
       {
         x_data = pdx_plot[,c(x_gene,"lineage")]
+      }
+      else if(input$data == "TCGADEPMAP(integrated)")
+      {
+        x_data = tcga_multi_plot[,c(x_gene,"lineage")]
       }
     }
     x_data
   })
   # Filter data based on selections
+  output$esssel = renderUI({
+    sel_list = c("")
+    if(input$data == "DEPMAP")
+    {
+      sel_list = colnames(pdx_plot)[!grepl("^MUT[.]",colnames(pdx_plot))]
+    }
+    else if(input$data == "TCGADEPMAP(exp.only)")
+    {
+      sel_list = colnames(pdx_plot)[!grepl("^MUT[.]",colnames(pdx_plot))]
+    }
+    else if(input$data == "PDXEDEPMAP(exp.only)")
+    {
+      sel_list = colnames(pdx_plot)[!grepl("^MUT[.]",colnames(pdx_plot))]
+    }
+    else if(input$data == "TCGADEPMAP(integrated)")
+    {
+      #sel_list = colnames(tcga_multi_plot)[!(grepl("^MUT[.]",colnames(tcga_multi_plot))|grepl("^DEL[.]",colnames(tcga_multi_plot))|grepl("^AMP[.]",colnames(tcga_multi_plot)))]
+      sel_list = colnames(tcga_multi_plot)
+    }
+    sel_list = setdiff(sel_list,"lineage")
+    selectizeInput("gene",
+                   "Gene Name:",
+                   choices=c("",sel_list))
+  })
+  
+  output$esssel2 = renderUI({
+    sel_list = c("")
+    if(input$mutdata == "DEPMAP")
+    {
+      sel_list = colnames(pdx_plot)[!grepl("^MUT[.]",colnames(pdx_plot))]
+    }
+    else if(input$mutdata == "TCGADEPMAP(exp.only)")
+    {
+      sel_list = colnames(pdx_plot)[!grepl("^MUT[.]",colnames(pdx_plot))]
+    }
+    else if(input$mutdata == "PDXEDEPMAP(exp.only)")
+    {
+      sel_list = colnames(pdx_plot)[!grepl("^MUT[.]",colnames(pdx_plot))]
+    }
+    else if(input$mutdata == "TCGADEPMAP(integrated)")
+    {
+      #sel_list = colnames(tcga_multi_plot)[!grepl("^MUT[.]",colnames(tcga_multi_plot))&!grepl("^DEL[.]",colnames(tcga_multi_plot))]
+      sel_list = colnames(tcga_multi_plot)
+    }
+    sel_list = setdiff(sel_list,"lineage")
+    selectizeInput("gene2",
+                   "Gene Name:",
+                   choices=c("",sel_list))
+  })
   
   output$mutsel = renderUI({
     if(input$muttype=="mut"){
@@ -82,14 +131,21 @@ server = function(input, output) {
       {
         sel_list = colnames(depmap_plot)[grepl("^MUT[.]",colnames(depmap_plot))]
       }
-      else if(input$mutdata == "TCGADEPMAP")
+      else if(input$mutdata == "TCGADEPMAP(exp.only)")
       {
-        sel_list = colnames(tcga_plot)[grepl("^MUT[.]",colnames(tcga_plot))]
+        #sel_list = colnames(tcga_plot)[grepl("^MUT[.]",colnames(tcga_plot))]
+        sel_list = colnames(tcga_mut_data)[grepl("^MUT[.]",colnames(tcga_mut_data))]
       }
-      else if(input$mutdata == "PDXEDEPMAP")
+      else if(input$mutdata == "PDXEDEPMAP(exp.only)")
       {
         sel_list = colnames(pdx_plot)[grepl("^MUT[.]",colnames(pdx_plot))]
       }
+      else if(input$mutdata == "TCGADEPMAP(integrated)")
+      {
+        #sel_list = colnames(tcga_multi_plot)[grepl("^MUT[.]",colnames(tcga_multi_plot))]
+        sel_list = colnames(tcga_mut_data)[grepl("^MUT[.]",colnames(tcga_mut_data))]
+      }
+
       selectizeInput("mutgene",
                      "Mutation:",
                      choices=c("",sel_list))
@@ -99,23 +155,61 @@ server = function(input, output) {
       sel_list = c("")
       if(input$mutdata == "DEPMAP")
       {
-        sel_list = colnames(depmap_plot)[grepl("^DEL[.]",colnames(depmap_plot))]
+        sel_list = colnames(depmap_plot)[grepl("^AMP[.]",colnames(depmap_plot))]
         selectizeInput("mutgene",
                        "Deletion:",
                        choices=c("",sel_list))
       }
-      else if(input$mutdata == "TCGADEPMAP")
+      else if(input$mutdata == "TCGADEPMAP(exp.only)")
       {
-        sel_list = colnames(tcga_plot)[grepl("^DEL[.]",colnames(tcga_plot))]
+        sel_list = colnames(tcga_mut_data)[grepl("^AMP[.]",colnames(tcga_mut_data))]
         selectizeInput("mutgene",
                        "Deletion:",
                        choices=c("",sel_list))
       }
-      else if(input$mutdata == "PDXEDEPMAP")
+      else if(input$mutdata == "PDXEDEPMAP(exp.only)")
       {
         selectizeInput("mutgene",
                        "Deletion data is not avaiable for PDXE",
                        choices=c(""))
+      }
+      else if(input$mutdata == "TCGADEPMAP(integrated)")
+      {
+        sel_list = colnames(tcga_mut_data)[grepl("^DEL[.]",colnames(tcga_mut_data))]
+        selectizeInput("mutgene",
+                       "Deletion:",
+                       choices=c("",sel_list))
+      }
+    }
+    else if(input$muttype=="amp")
+    {
+      sel_list = c("")
+      if(input$mutdata == "DEPMAP")
+      {
+        sel_list = colnames(depmap_plot)[grepl("^AMP[.]",colnames(depmap_plot))]
+        selectizeInput("mutgene",
+                       "Amplification:",
+                       choices=c("",sel_list))
+      }
+      else if(input$mutdata == "TCGADEPMAP(exp.only)")
+      {
+        sel_list = colnames(tcga_mut_data)[grepl("^AMP[.]",colnames(tcga_mut_data))]
+        selectizeInput("mutgene",
+                       "Amplification:",
+                       choices=c("",sel_list))
+      }
+      else if(input$mutdata == "PDXEDEPMAP(exp.only)")
+      {
+        selectizeInput("mutgene",
+                       "Amplification data is not avaiable for PDXE",
+                       choices=c(""))
+      }
+      else if(input$mutdata == "TCGADEPMAP(integrated)")
+      {
+        sel_list = colnames(tcga_mut_data)[grepl("^AMP[.]",colnames(tcga_mut_data))]
+        selectizeInput("mutgene",
+                       "Amplification:",
+                       choices=c("",sel_list))
       }
     }
     
@@ -156,13 +250,17 @@ server = function(input, output) {
       {
         x_data = depmap_plot[,c(x_gene,input$gene2)]
       }
-      else if(input$mutdata == "TCGADEPMAP" & input$mutgene%in%colnames(tcga_plot))
+      else if(input$mutdata == "TCGADEPMAP(exp.only)" & input$mutgene%in%colnames(tcga_mut_data))
       {
-        x_data = tcga_plot[,c(x_gene,input$gene2)]
+        x_data = data.frame(tcga_plot,tcga_mut_data[rownames(tcga_plot),])[,c(x_gene,input$gene2)]
       }
-      else if(input$mutdata == "PDXEDEPMAP" & input$mutgene%in%colnames(pdx_plot))
+      else if(input$mutdata == "PDXEDEPMAP(exp.only)" & input$mutgene%in%colnames(pdx_plot))
       {
         x_data = pdx_plot[,c(x_gene,input$gene2)]
+      }
+      else if(input$mutdata == "TCGADEPMAP(integrated)" & input$mutgene%in%colnames(tcga_mut_data))
+      {
+        x_data = data.frame(tcga_multi_plot,tcga_mut_data[rownames(tcga_multi_plot),])[,c(x_gene,input$gene2)]
       }
       if(length(x_data)>1)
       {
@@ -170,6 +268,9 @@ server = function(input, output) {
         key_s = "MUT"
         if(input$muttype=="del"){
           key_s = "DEL"
+        }
+        else if(input$muttype=="amp"){
+          key_s = "AMP"
         }
         #key_id = gsub(paste0(key_s,"."),"",x_gene)
         idx0 = which(x_data[,x_gene]==0)
