@@ -155,14 +155,14 @@ server = function(input, output) {
       sel_list = c("")
       if(input$mutdata == "DEPMAP")
       {
-        sel_list = colnames(depmap_plot)[grepl("^AMP[.]",colnames(depmap_plot))]
+        sel_list = colnames(depmap_plot)[grepl("^DEL[.]",colnames(depmap_plot))]
         selectizeInput("mutgene",
                        "Deletion:",
                        choices=c("",sel_list))
       }
       else if(input$mutdata == "TCGADEPMAP(exp.only)")
       {
-        sel_list = colnames(tcga_mut_data)[grepl("^AMP[.]",colnames(tcga_mut_data))]
+        sel_list = colnames(tcga_mut_data)[grepl("^DEL[.]",colnames(tcga_mut_data))]
         selectizeInput("mutgene",
                        "Deletion:",
                        choices=c("",sel_list))
