@@ -88,6 +88,10 @@ server = function(input, output) {
     {
       sel_list = colnames(pdx_plot)[!grepl("^MUT[.]",colnames(pdx_plot))]
     }
+    else if(input$data == "GTEXDEPMAP(exp.only)")
+    {
+      sel_list = colnames(pdx_plot)[!grepl("^MUT[.]",colnames(pdx_plot))]
+    }
     else if(input$data == "TCGADEPMAP(integrated)")
     {
       #sel_list = colnames(tcga_multi_plot)[!(grepl("^MUT[.]",colnames(tcga_multi_plot))|grepl("^DEL[.]",colnames(tcga_multi_plot))|grepl("^AMP[.]",colnames(tcga_multi_plot)))]
