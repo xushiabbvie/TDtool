@@ -1,5 +1,5 @@
 # Translational Dependency Tool (TDtool)
-This repo contains code for gene expression alignment presented in TCGADEPMAP – Mapping Translational Dependencies and Synthetic Lethalities within The Cancer Genome Atlas. Part of the codes are incorportated from [Celligner](https://github.com/broadinstitute/Celligner_ms).
+This repo contains code for gene expression alignment presented in Building a Translational Cancer Dependency Map for The Cancer Genome Atlas. Part of the codes are incorportated from [Celligner](https://github.com/broadinstitute/Celligner_ms).
 
 ## Manuscript
 The preprint version of the manuscript is available at https://www.biorxiv.org/content/10.1101/2022.03.24.485544v2.
