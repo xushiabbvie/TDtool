@@ -1,4 +1,3 @@
-setwd("/unitynfs1/projects/shixx1/Celligner_ms")
 library(here)
 library(magrittr)
 library(tidyverse)
