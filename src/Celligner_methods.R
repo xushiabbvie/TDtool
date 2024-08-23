@@ -33,8 +33,10 @@ load_data <- function(data_dir, tumor_file = 'TCGA_mat.tsv', cell_line_file = 'C
   rownames(hgnc.complete.set) <- hgnc.complete.set$symbol
   hgnc.complete.set <- hgnc.complete.set[common_genes,]
   colnames(TCGA_mat) <- hgnc.complete.set$ensembl_gene_id
-  
-  CCLE_mat <-  readr::read_csv(file.path(data_dir, cell_line_file)) %>% 
+
+  CCLE_mat <-  readr::read_csv(file.path(data_dir, cell_line_file)) 
+  colnames(CCLE_mat)[1] = "X1"
+  CCLE_mat = CCLE_mat %>% 
     as.data.frame() %>%
     tibble::column_to_rownames('X1') %>%
     as.matrix()
