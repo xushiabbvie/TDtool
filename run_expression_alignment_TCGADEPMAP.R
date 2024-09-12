@@ -34,9 +34,9 @@ dat$TCGA_mat = t(comb_mat_norm[,rownames(dat$TCGA_mat)])
 gene_stats <- calc_gene_stats(dat, datapath)
 
 comb_ann <- rbind(
-  dat$TCGA_ann %>% dplyr::select(sampleID, lineage, subtype, `Primary/Metastasis`) %>%
+  dat$TCGA_ann %>% dplyr::select(sampleID, lineage) %>%
     dplyr::mutate(type = 'tumor'),
-  dat$CCLE_ann %>% dplyr::select(sampleID, lineage, subtype, `Primary/Metastasis`) %>%
+  dat$CCLE_ann %>% dplyr::select(sampleID, lineage) %>%
     dplyr::mutate(type = 'CL')
 )
 
