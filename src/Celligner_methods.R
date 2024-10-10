@@ -118,6 +118,7 @@ create_Seurat_object <- function(exp_mat, ann, type = NULL) {
   if(!is.null(type)) {
     seu_obj@meta.data$type <- type
   }
+  # seu_obj <- Seurat::NormalizeData(seu_obj) # add this line if you are using Seurat v5 or later
   # mean center the data, important for PCA
   seu_obj <- Seurat::ScaleData(seu_obj, features = rownames(Seurat::GetAssayData(seu_obj)), do.scale = F)
   
