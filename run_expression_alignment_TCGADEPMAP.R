@@ -3,6 +3,8 @@
 #### tumor and cell line transcriptional profiles. Nat Commun 12, 22 (2021). 
 #### https://doi.org/10.1038/s41467-020-20294-x
 
+### This code is tested under Seurat 4.4.0. Please uncomment line 121 in src/Celligner_methods.R if you are using Seurat v5 or later
+
 rm(list=ls())
 datapath="./" #set to the path to TDtool
 setwd(datapath)
