@@ -52,7 +52,7 @@ Elastic_model = function(y,x)
   cvfit_gene = cv.glmnet(t(x),y,nfolds = 10,alpha=0.5)
   pred_score_gene = predict(cvfit_gene,newx = t(x),s="lambda.min")
   pred_ability = cor(pred_score_gene,y)
-  res = list("model"=cvfit_gene,"predictability"=pred_ability)
+  res = list("model"=cvfit_gene,"pred"=pred_score_gene,"predictability"=pred_ability)
 }
 
 ## convert training data to list for multiprocess
@@ -73,4 +73,30 @@ proc.time() - ptm
 library(rlist)
 TCGA_ess_data = list.rbind(TCGA_ess)
 
-saveRDS(TCGA_ess_data,file="TCGA_essentiality_scores.rds")
+### correct gene essentiality range
+correct_genes = rownames(TCGA_ess_data)
+correct_genes_fitting = mclapply(correct_genes,mc.cores=50,function(x){
+  x_crispr = gene_effect_21Q1_imp[x,]
+  x_fitted = elastic_coef_all[[x]]$pred
+  
+  cells_bins = seq(min(x_crispr),0,by=0.01)
+  cells_binned = list()
+  for(i in 1:(length(cells_bins)-1))
+  {
+    cells_binned[[i]] = names(x_crispr)[x_crispr>=cells_bins[i] & x_crispr<cells_bins[i+1]]
+  }
+  cells_binned[[length(cells_bins)]] = names(x_crispr)[x_crispr>=cells_bins[length(cells_bins)-1]]
+  
+  y_binned = sapply(cells_binned,function(x) median(x_crispr[x]))
+  x_binned = sapply(cells_binned,function(x) median(x_fitted[x,1]))
+  idx1 = which(!is.na(y_binned))
+  y_binned = y_binned[idx1]
+  x_binned = x_binned[idx1]
+  x_line = lm(y_binned~x_binned)
+  
+  return(list("line.bin"=x_line$coefficients))
+})
+names(correct_genes_fitting) = correct_genes
+
+TCGA_corrected_ess = t(sapply(names(correct_genes_fitting),function(x) TCGA_ess_data[x,]*correct_genes_fitting[[x]]$line.bin[2]+correct_genes_fitting[[x]]$line.bin[1]))
+saveRDS(TCGA_corrected_ess,file="TCGA_essentiality_scores.rds")
